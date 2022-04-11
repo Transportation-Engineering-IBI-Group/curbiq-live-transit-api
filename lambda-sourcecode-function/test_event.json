@@ -1,0 +1,44 @@
+{
+    "resource": "/arrival_predictions",
+    "path": "/arrival_predictions",
+    "httpMethod": "GET",
+    "headers": null,
+    "multiValueHeaders": null,
+    "queryStringParameters": {
+      "agency": "ttc",
+      "stop_id": "4291"
+    },
+    "multiValueQueryStringParameters": {
+      "agency": [
+        "ttc"
+      ],
+      "stop_id": [
+        "4291"
+      ]
+    },
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+      "resourceId": "5ob26u",
+      "resourcePath": "/arrival_predictions",
+      "httpMethod": "GET",
+      "extendedRequestId": "QR7LYGH9YosF1Vw=",
+      "requestTime": "08/Apr/2022:21:13:31 +0000",
+      "path": "/arrival_predictions",
+      "accountId": "164786652842",
+      "protocol": "HTTP/1.1",
+      "stage": "test-invoke-stage",
+      "domainPrefix": "testPrefix",
+      "requestTimeEpoch": 1649452411860,
+      "requestId": "ba80951f-0131-4ff5-8cbf-63391f07c615",
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "cognitoIdentityId": null,
+        "apiKey": "test-invoke-api-key",
+        "principalOrgId": null,
+        "cognitoAuthenticationType": null,
+        "userArn": "arn:aws:iam::164786652842:root",
+        "apiKeyId": "test-invoke-api-key-id"
+      }
+    }
+  }

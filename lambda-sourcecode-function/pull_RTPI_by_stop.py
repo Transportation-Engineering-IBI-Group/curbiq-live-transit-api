@@ -4,7 +4,6 @@ import json
 
 def pull_RTPI(event, context):
     
-    print(event)
     # parse out query string parameters:
     
     def pull_RTPI_NextBus(agency,stop_id):
@@ -19,14 +18,41 @@ def pull_RTPI(event, context):
         
         next_arrival_resp['routes'] = []
         
-        routes = [route['@routeTag'] for route in resp_dict['body']['predictions']]
+        if type(resp_dict['body']['predictions']) != list:
+            routes = [resp_dict['body']['predictions']]
+        else:
+            routes = [route for route in resp_dict['body']['predictions']]
+    
+        i = 0
+        for route in routes:
+            if 'direction' in route:
+                direction = route['direction']
+                if type(direction)==list:
+                    for subdir in direction:
+                        next_arrival_resp['routes'].extend([dict()])
+                        next_arrival_resp['routes'][i]['route_id'] = subdir['@title'].split(' - ')[1].split(' ')[0]
+                        next_arrival_resp['routes'][i]['headsign'] = subdir['@title']
+                        if type(subdir['prediction'])==list:
+                            next_arrival_resp['routes'][i]['arrival_pred_mins'] = [int(pred['@minutes']) for pred in subdir['prediction']]
+                        else:
+                            next_arrival_resp['routes'][i]['arrival_pred_mins'] = [int(subdir['prediction']['@minutes'])]
+                        i+=1
+                else:
+                    next_arrival_resp['routes'].extend([dict()])
+                    next_arrival_resp['routes'][i]['route_id'] = route['@routeTag']
+                    next_arrival_resp['routes'][i]['headsign'] = direction['@title']
+                    if type(direction['prediction'])==list:
+                        next_arrival_resp['routes'][i]['arrival_pred_mins'] = [int(pred['@minutes']) for pred in direction['prediction']]
+                    else:
+                        next_arrival_resp['routes'][i]['arrival_pred_mins'] = [int(direction['prediction']['@minutes'])]
+                    i+=1
+            else:
+                next_arrival_resp['routes'].extend([dict()])
+                next_arrival_resp['routes'][i]['route_id'] = route['@routeTag']
+                next_arrival_resp['routes'][i]['headsign'] = route['@dirTitleBecauseNoPredictions']
+                next_arrival_resp['routes'][i]['arrival_pred_mins'] = []
+                i+=1
         
-        for i,route in enumerate(routes):
-            next_arrival_resp['routes'].extend([dict()])
-            next_arrival_resp['routes'][i]['route_id'] = route
-            next_arrival_resp['routes'][i]['headsign'] = resp_dict['body']['predictions'][0]['direction'][i]['@title']
-            next_arrival_resp['routes'][i]['arrival_pred_mins'] = [int(pred['@minutes']) for pred in resp_dict['body']['predictions'][0]['direction'][i]['prediction']]
-            
         return next_arrival_resp
     
     def pull_RTPI_GTFSrt(agency,stop_id):
@@ -57,8 +83,3 @@ def pull_RTPI(event, context):
         "multiValueHeaders": {},
         "body": json.dumps(next_arrival_response)
     }
-
-with open('lambda-sourcecode-function/test_event.json', 'r') as f:
-    event = json.load(f)
-
-pull_RTPI(event, '')
